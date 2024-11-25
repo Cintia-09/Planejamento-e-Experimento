@@ -76,4 +76,19 @@ c3= c(0,0,3,-1,-1,-1)
 c2= c(0,0,0,2,-1,-1)
 c1= c(0,0,0,0,1,-1)
 
+plot(Diametro, y)
+abline(lm (y~Diametro))
+a= lm(y~Diametro)
+a$coefficients
 
+##criando a função de regressao para predição de resultados
+f=  function(x){
+  y= 84.22234 - 11.84734 *x
+  return(y)
+}
+
+predict(a)
+media_geral= mean(medias)
+media_geral
+abline(media_geral,0,col="blue",pch= 19)
+points(saida$medias$trat, saida$medias$resp,col= "red", pch=19, type= "b", lwd= 2)

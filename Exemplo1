@@ -1,0 +1,79 @@
+install.packages("ExpDes.pt")
+library("ExpDes.pt")
+
+Diametro= c(rep(0.37,4),rep(0.51,4),rep(0.71,4),
+            rep(1.02,4),rep(1.40,4),rep(1.99,4))
+Diametro
+y= c(80,
+     83,
+     83,
+     85,
+     75,
+     75,
+     79,
+     79,
+     74,
+     73,
+     76,
+     77,
+     67,
+     72,
+     74,
+     74,
+     62,
+     62,
+     67,
+     69,
+     60,
+     61,
+     64,
+     66)
+
+y
+### factor usando na variavel x (tratamentos)
+Diam = factor(Diametro)
+Diam
+
+data.frame(Diametro, y)
+
+##Obs: sempre fazer a variavel resposta como quantitativo.
+plot(y~Diametro, xlab = 'Diametro', ylab = "Radônio")
+plot(y~Diam)
+
+
+#######analise descritiva
+medias = tapply(y, Diam, mean)
+medias
+tapply(y, Diam, sd)
+tapply(y, Diam, min)
+tapply(y, Diam, max)
+n= tapply(y, Diam,length)
+n
+###summary tem que ser quantitativo
+summary(Diam)
+
+
+### testes
+saida= dic(Diam, y,, quali= T , mcomp = "tukey", hvar = "bartlett")
+saida
+N=24
+n= 4
+
+##graus de liberdade
+###a - 1  (tratamento)
+####N-a (resíduo)
+#####N-1(total)
+
+####intervalo de confianaça para mi = 1,40
+QMRES= 7.347;QMRES
+65+qt(0.975,18)*sqrt(QMRES/n)
+65-qt(0.975,18)*sqrt(QMRES/n)
+
+###contrastes
+c5= c(5, -1,-1,-1,-1,-1)
+c4= c(0,4,-1,-1,-1,-1)
+c3= c(0,0,3,-1,-1,-1)
+c2= c(0,0,0,2,-1,-1)
+c1= c(0,0,0,0,1,-1)
+
+

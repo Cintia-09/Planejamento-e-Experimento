@@ -1,0 +1,213 @@
+#######Aula planejamento e experimentos###########
+###Atividade Montgomery 3.19, pag= 117############
+
+install.packages("ExpDes.pt")
+library("ExpDes.pt")
+
+Diametro = c(0.37,
+             0.37,
+             0.37,
+             0.37,
+             0.51,
+             0.51,
+             0.51,
+             0.51,
+             0.71,
+             0.71,
+             0.71,
+             0.71,
+             1.02,
+             1.02,
+             1.02,
+             1.02,
+             1.40,
+             1.40,
+             1.40,
+             1.40,
+             1.99,
+             1.99,
+             1.99,
+             1.99); Diametro
+y = c(80,
+      83,
+      83,
+      85,
+      75,
+      75,
+      79,
+      79,
+      74,
+      73,
+      76,
+      77,
+      67,
+      72,
+      74,
+      74,
+      62,
+      62,
+      67,
+      69,
+      60,
+      61,
+      64,
+      66); y
+
+
+cbind(Diametro,y)
+Diametro_f= factor(Diametro)
+Diametro_f
+
+
+plot (y~Diametro,pch = 19)
+points(Diametro_f,y,pch=19,col = "blue")
+
+
+plot (y~Diametro_f,pch = 19)
+points(Diametro_f,y,pch=19,col = "red")
+
+####medias
+tapply(y,Diametro_f,mean)
+tapply(y,Diametro_f,sd)
+tapply(y,Diametro_f,min)
+tapply(y,Diametro_f,max)
+tapply(y,Diametro_f,length)
+
+summary(y,Diametro_f)
+
+
+#####Teste
+
+saida= dic(Diametro_f,y,mcomp = 'tukey',hvar='bartlett')
+saida
+names(saida)
+###Defina e teste dos contrates ortogonais, que envolvam 3 média ou mais.
+##Contrates
+c1=c(1,-3,2,0,0,0)
+c1
+c2=c(-2,0,1,1,0,0)
+c2
+c3=c(5,-1,-1,-1,-1-1)
+c3
+c4=c(0,4,-1,-1,-1,-1)
+c4
+
+####media
+media = tapply(y,Diametro_f,mean);media 
+
+sum(c1*media)^2
+sum(c2*media)^2
+sum(c3*media)^2
+sum(c4*media)^2
+
+n=4;n
+
+###quadrado medio
+QMRES=7.347 
+QMRES
+
+
+###soma de quadrados
+
+SQC1= n*sum(c1*media)^2/sum(c1*c1)
+SQC1
+SQC2= n*sum(c2*media)^2/sum(c2*c2)
+SQC2
+SQC3= n*sum(c3*media)^2/sum(c3*c3)
+SQC3
+SQC4= n*sum(c4*media)^2/sum(c4*c4)
+SQC4
+
+FC1= SQC1/QMRES
+FC1
+FC2= SQC2/QMRES
+FC2
+FC3= SQC3/QMRES
+FC3
+FC4= SQC4/QMRES
+FC4
+
+####p-valor###
+pf(FC1,1,saida$gl.residual,lower.tail = F)
+pf(FC2,1,saida$gl.residual,lower.tail = F)
+pf(FC3,1,saida$gl.residual,lower.tail = F)
+pf(FC4,1,saida$gl.residual,lower.tail = F)
+
+
+######regressão polinomial 25/11/24
+
+require(ExpDes.pt)
+
+saida2= dic(Diametro,y,quali = F,
+            mcomp= 'tukey',hvar="bartlett")
+saida2
+58.3730/7.3432
+pf(7.94,1,18, lower.tail = F)  
+  
+  
+  
+names(saida2)
+
+saida2$reg
+
+###grafico
+plot(y~Diametro,xlab= "Diametro(mm)",ylab = "Quantidade de Radonio(%)", pch=19)
+abline (a= 84.22234, b= -11.84734, col= "blue", lwd = 3)
+points(0.6,77.11394,col= "red", pch=11)
+
+####usando o lm():
+
+modelo_reg= lm(y~Diametro);modelo_reg
+anova(modelo_reg)
+aov(modelo_reg)
+summary(aov(modelo_reg))
+
+####coeficientes do modelo
+coef(modelo_reg)
+
+#####matriz
+model.matrix(modelo_reg)
+
+####calcular o valor da reta estimada para diametro = 0.6
+y_est=84.22234-11.847348*0.6
+y_est
+
+dens= c(21.8,
+        21.9,
+        21.7,
+        21.6,
+        21.7,
+        21.7,
+        21.4,
+        21.5,
+        21.4,
+        21.9,
+        21.8,
+        21.8,
+        21.6,
+        21.5,
+        21.9,
+        21.7,
+        21.8,
+        21.4)
+dens
+temp =c(rep(100,5), rep(125,4), rep(150,5), rep(175,4)) 
+temp
+cbind(temp,dens)
+
+###dados como qualitativo
+saida3= dic(temp,dens,quali=T,
+            mcomp= 'tukey',hvar="bartlett")
+saida3
+###obs: os niveis de temperatura nao afeta os niveis de desnsidade
+
+###media geral
+mean(dens)
+
+
+###grafico (perfil medio de comportamento) e media geral
+plot(dens~temp,xlab= "temperatura)",ylab = "Desnsidade",type="b" pch=19)
+abline(h= mean(dens),col="orange")
+points(saida3$medias$trat,saida3$medias$resp,
+       col= "blue",lwd= 3,type = "b", pch=19)
+

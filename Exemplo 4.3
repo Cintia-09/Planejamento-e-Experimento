@@ -1,0 +1,73 @@
+######aula 29/11 planejamento e experimento
+
+
+
+y=c(73 ,
+68,
+74,
+71,
+67,
+73,
+67,
+75,
+72,
+70,
+75,
+68,
+78,
+73,
+68,
+73,
+71,
+75,
+75,
+69);y
+
+
+trat = rep(c(1,2,3,4),each = 5) ; trat
+bloco = rep(c(1,2,3,4,5), 4) ; bloco
+cbind(y,trat, bloco)
+
+
+boxplot(y~trat)
+points(trat,y,pch = 19,col='blue')
+
+trat = factor(rep(c(1,2,3,4),each = 5)) ; trat
+
+require(ExpDes.pt)
+bartlett.test(y~trat)
+
+##medias
+
+tapply(y, trat, var)
+tapply(y, trat, mean)
+
+
+dbc(trat,bloco,y, quali = TRUE, mcomp = "tukey")
+
+
+saida = dbc(trat,bloco,y,quali = TRUE, mcomp = 'tukey')
+
+names(saida)
+plot(saida$residuos)
+cbind(y - saida$valores.ajustados,saida$residuos)
+
+plot(saida$residuos/sqrt(1.817), 
+     ylim=c(-2.5,2.5),
+     pch=19,
+     col=rep(c(3,4,5,6), each=5))  ####residuos padronizados
+     abline(h = 2)
+     abline(h = 2)
+     abline(h = 0)
+
+cbind(y,trat)
+
+qqnorm(saida$residuos/sqrt(1.817))
+qqline(saida$residuos/sqrt(1.817))
+
+
+yt= log(y);yt
+saida= dbc(trat,bloco,yt, quali = TRUE, mcomp = "tukey")
+
+qqnorm(saida$residuos/sqrt(0.0003499))
+qqline(saida$residuos/sqrt(0.0003499))

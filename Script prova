@@ -1,0 +1,518 @@
+######SCRIPT PROVA PLANEJAMENTO####
+
+install.packages("ExpDes.pt")
+library("ExpDes.pt")
+
+cana=factor(rep(1:6, each=5))
+cana
+
+cana=factor(rep(seq(1:6), 5)); cana
+
+y=c(
+  112.3, 125.3, 118.4, 127.9, 130.1, 115.2,
+  121.0, 119.7, 120.5, 128.3, 122.4, 123.2,
+  114.3, 120.8, 119.7, 129.5, 126.7, 117.8,
+  115.8, 120.5, 118.3, 126.5, 127.3, 120.8,
+  117.2, 122.3, 117.8, 127.3, 128.9, 116.4
+);y
+
+cbind(cana, y)
+
+
+###medidas
+tapply(y, cana, mean)
+tapply(y, cana, sd)
+
+round(100*tapply(y, cana, sd)/tapply(y, cana, mean), 2)
+
+?aov
+
+N=length(y);N
+anova(aov(y~cana))
+(N-1)*var(y)
+
+
+####teste bartllet
+saida_dic=dic(cana, y, hvar = "bartlett")
+
+####analise grafica
+plot(y~cana)
+points(cana, y, pch=19)
+
+
+###########################################continuação
+cana=factor(rep(1:6, each=5))
+cana
+
+cana=factor(rep(seq(1:6), 5)); cana
+
+y=c(
+  112.3, 125.3, 118.4, 127.9, 130.1, 115.2,
+  121.0, 119.7, 120.5, 128.3, 122.4, 123.2,
+  114.3, 120.8, 119.7, 129.5, 126.7, 117.8,
+  115.8, 120.5, 118.3, 126.5, 127.3, 120.8,
+  117.2, 122.3, 117.8, 127.3, 128.9, 116.4
+)
+y0=y
+
+saida_y0=anova(aov(y0~cana))
+saida_y0
+
+yt=y+4  ### ADICIONAMOS UMA CONSTANTE A TDS OS DADOS:
+y=yt
+saida_y=anova(aov(y~cana)) ### A ANOVA NÃO SE ALTERA!!!
+saida_y
+
+y2=y0*3  ### MULTIPLICAMOS UMA CONSTANTE A TDS OS DADOS:
+saida_y2=anova(aov(y2~cana)) ### A ANOVA SE ALTERA!!!
+saida_y2
+var(y2)
+
+
+
+#### SELECIONAR 2 VARIEDADES:
+###  A ESTATISTICA F=t^2, para dois grupos independentes, 
+###  COM MESMA VARIÂNCIA:
+
+dados=data.frame(cbind(cana, y0))
+head(dados)
+
+dados2=subset(dados, dados$cana=="1" | dados$cana=="2" )
+dim(dados2)
+attach(dados2)
+saida_cana1_2=anova(aov(y0~cana, data=dados2))
+saida_cana1_2
+bartlett.test(dados2$y0,dados2$cana)
+
+t.test(dados2$y0~dados2$cana, 
+       alternative = c("two.sided"),
+       paired = FALSE, var.equal = TRUE)
+
+saida_cana1_2
+
+
+
+##### Exemplos de Problemas do Montgomery - DIC:
+
+y=c(65,	64,
+    81,	71,
+    57,	83,
+    66,	59,
+    82,	65,
+    82,	56,
+    67,	69,
+    59,	74,
+    75,	82,
+    70,	79);y
+
+Formula=factor(rep(c(1,2),10))
+Formula
+cbind(y, Formula)
+
+library(ExpDes.pt)
+
+###analise descritiva
+summary(y)
+tapply(y, Formula, mean)
+tapply(y, Formula, sd)
+tapply(y, Formula, min)
+tapply(y, Formula, max)
+tapply(y, Formula, length)
+table(Formula)
+100*tapply(y, Formula, sd)/tapply(y, Formula, mean)
+
+###analise grafica
+boxplot(y~Formula)
+points(Formula, y, pch=19)
+
+boxplot(y)
+points(y, pch=19)   ### REVER SE ESTA CORRETO!!!
+
+### pROB: 2-21
+
+saida1=dic(Formula, y, quali = TRUE, mcomp = "tukey", hvar = "bartlett")
+
+names(saida1)
+
+plot(saida1$residuos/sqrt(86.778), ylim=c(-3,3))
+abline(h=0)
+abline(h=2)
+abline(h=-2)
+
+
+##### Prblema: 3-5
+
+
+y1=c(
+  3129,3000,2865,2890,3200,3300,
+  2975,3150,2800,2900,2985,3050,
+  2600,2700,2600,2765);y1
+
+Mixtura=factor(rep(seq(1:4), each=4))
+Mixtura
+cbind(y1, Mixtura)
+
+boxplot(y1~Mixtura)
+points(Mixtura, y1)
+
+saida2=dic(Mixtura, y1, 
+           quali = TRUE, 
+           mcomp = "tukey", 
+           hvar = "bartlett")
+
+
+##### Exemplos de Problemas do MOntgomery - 
+##### DIC: Problema 19 - 7a Edição
+
+
+y=c(80,83,83,85,75,75,79,79,74,73,76,77,67,72,
+    74,74,62,62,67,69,60,61,64,66) ; y
+
+Diametro=c(  0.37,  0.37,  0.37,  0.37,  0.51,  
+             0.51,  0.51,  0.51,  0.71,  0.71,  0.71,  0.71,  
+             1.02,  1.02,  1.02,  1.02,  1.40,  1.40,  1.40,  
+             1.40,  1.99,  1.99,  1.99,  1.99);Diametro
+
+cbind(Diametro, y)
+Diametro_f=factor(Diametro)
+Diametro_f
+plot(y~Diametro, pch=19)
+
+plot(y~Diametro_f)
+points(Diametro_f,y, pch=19)
+
+library(ExpDes.pt)
+
+saida=dic(Diametro_f,y, mcomp = "tukey",hvar = "bartlett")
+names(saida)
+
+media=tapply(y, Diametro, mean)
+media
+
+## Contraste1:
+
+n=4;n
+C1=c(1,-3,2,0,0,0)
+C1
+SQC1= n*sum(C1*media)^2 / sum(C1*C1)
+SQC1
+FC1=SQC1/ 7.347
+FC1
+
+pf(FC1, 1, saida$gl.residual, lower.tail=F) ## Não Rej. Ho
+
+
+######### Regressão Polinomial:
+
+##### a=6 níveis, então decomposição até o 5o grau:
+
+require(ExpDes.pt)
+
+saida2=dic(Diametro,y, quali = F, 
+           mcomp = "tukey",hvar = "bartlett")
+names(saida2)
+  
+saida2$reg
+saida2$coeficientes
+plot(y~Diametro,xlab="Diâmetro(mm)", 
+     ylab="Quantidade de Radônio(%)", pch=19)
+abline(a=84.22234, b=-11.84734, col="blue", lwd=3)
+
+
+#### Usando o lm():
+
+modelo_reg=lm(y~Diametro)
+modelo_reg
+
+anova(modelo_reg)
+aov(modelo_reg)
+summary(aov(modelo_reg))
+summary.aov(modelo_reg)
+
+coef(modelo_reg)
+model.matrix(modelo_reg)
+
+84.22234-11.84734*0.6 
+predict.lm(modelo_reg, x=0.6)
+
+plot(y~Diametro,xlab="Diâmetro(mm)", 
+     ylab="Quantidade de Radônio(%)", pch=19)
+abline(a=84.22234, b=-11.84734, col="blue", lwd=3)
+points(0.6, 77.11394, pc=11, col="orange")
+
+
+###########################################
+
+
+dens=c(21.8,21.9,21.7,21.6,21.7,21.7,21.4,21.5,21.4,21.
+       9,21.8,21.8,21.6,21.5,21.9,21.7,21.8,21.4)
+dens
+temp=c(rep(100,5), rep(125,4), rep(150,5), rep(175,4) )
+temp
+
+cbind(temp, dens)
+
+###teste
+saida3=dic(temp, dens, quali = T, 
+           mcomp = "tukey",hvar = "bartlett")
+
+
+####analise grafica
+plot(dens~temp, pch=19)
+abline(h=21.673, col="blue")
+points(saida3$medias$trat, 
+       saida3$medias$resp, col="green",
+       type="b", lwd=3, pch=19)
+
+#####TESTE DUNNETT E TESTE DUCAN
+
+#### Biblioteca “DescTools”
+
+install.packages("DescTools")
+
+library(DescTools)
+
+boxplot(Ozone ~ Month, data = airquality)
+
+?airquality
+
+#####teste dunnett
+DunnettTest(Ozone ~ Month, data = airquality, control="8", conf.level=0.9)
+
+
+### Outra biblioteca: “agricolae”
+
+install.packages("agricolae")
+
+library(agricolae)
+
+data(sweetpotato)
+model<-aov(yield~virus,data=sweetpotato)
+out <- duncan.test(model,"virus",
+                   main="Yield of sweetpotato. Dealt with different virus")
+plot(out,variation="IQR")
+model
+
+####teste ducan
+duncan.test(model,"virus",alpha=0.01,console=TRUE)
+
+
+?sweetpotato
+head(sweetpotato)
+
+###analise grafica
+df<-df.residual(model);df
+MSerror<-deviance(model)/df
+out <- with(sweetpotato,duncan.test(yield,virus,df,MSerror, group=TRUE))
+plot(out,horiz=TRUE,las=1)
+print(out$groups)
+
+
+out <- HSD.test(model,"virus", group=TRUE,console=TRUE,
+                +  main="Yield of sweetpotato\nDealt with different virus")
+out
+
+#stargraph
+# Variation range: max and min
+plot(out)
+par(mfrow=c(1,2))
+plot(out)
+out1 <- with(sweetpotato,duncan.test(yield,virus,df,MSerror, group=TRUE))
+plot(out1,horiz=TRUE,las=1)
+plot(out)
+plot(out1,horiz=F,las=1)
+
+###########################################################
+
+# pacotes necessarios
+library(tidyverse)
+library(e1071)
+library(ExpDes.pt)
+library(xtable)
+
+#observacoes
+dados = c(80,83,83,85,75,75,79,79,74,73,76,77,
+          67,72,74,74,62,62,67,69,60,61,64,6)
+dados
+# tratamentos / fatores
+diam = factor(rep(c(1:6), each = 4))
+diam 
+# armazenando os dados em um dataframe
+df = data.frame(cbind(dados, diam))
+df
+# analise grafica inicial 
+boxplot(dados~diam, col = 'seagreen', xlab = 'Diâmetro (Tratamentos)', 
+        ylab = 'Quantidade de Radônio (%)',
+        main = 'Boxplot dos Tratamentos')
+points(diam, dados, pch = 19)
+
+# teste de homogeneidade de variancias
+bartlett.test(df$dados, df$diam)
+
+# comparação de medias dos tratamentos
+mod = dic(diam, dados,
+          quali = T,
+          mcomp = 'tukey', # a posteriori da anova
+          hvar = 'bartlett')
+
+## Analise de Residuos
+
+# residuos ordinarios
+res.ord = dados - mod$valores.ajustados; res.ord
+res.ord
+# residuos padronizados
+res.pdr = res.ord/sqrt(135.68); res.pdr
+res.pdr
+cbind(res.ord, res.pdr)
+
+# residuos padronizados
+plot(mod$residuos/sqrt(135.68), ylim = c(-3,3), pch = 19,
+     main = 'Resíduos Padronizados')
+abline(h = 0)
+abline(h = 2)
+abline(h = -2)
+
+# residuo padronizado
+plot(res.pdr, ylim = c(-2.5, 2.5),
+     pch = 19,
+     col = rep(c(3,4,5,6), each = 5),
+     main = 'Resíduos Padronizados',
+     ylab = 'Resíduos padronizados',
+     xlab = 'Valores ajustados')
+
+abline(h = 2, col = 'gray')
+abline(h = -2, col = 'gray')
+abline(h = 0, col = 'gray')
+
+qqnorm(mod$residuos)
+qqline(mod$residuos)
+
+# Analise de Variancia (outra maneira)
+anova(aov(dados~diam))
+shapiro.test(mod$residuos)
+library(hnp)
+# envelopes de confiança
+hnp(mod$residuos/sqrt(7.347), conf = 0.95)
+
+# medidas descritivas
+df |> 
+  summarise(
+    Mean = mean(dados),
+    "1st Qu." = quantile(dados, probs = 0.25),
+    Median = median(dados),
+    "3st Qu." = quantile(dados, probs = 0.75),
+    Desv.pd = sd(dados),
+    Min = min(dados),
+    Max = max(dados),
+    Kurt = kurtosis(dados),
+    Skew = skewness(dados),
+    CV = sprintf("%.2f%%", (sd(dados)/mean(dados))*100)
+  ) |> xtable()
+
+
+############################################################################
+#Quatro designs diferentes para um circuito de computador digital
+#estão sendo estudados para comparar a quantidade de ruído presente. O
+#Os seguintes dados foram obtidos:
+
+install.packages("ExpDes.pt")
+library(ExpDes.pt)
+
+# Y é a resposta(observações dos tratamentos) dos dados!
+y = c(19,20,19,30,8,80,61,73,56,80,47,26,25,35,50,95,46,83,78,97)
+y
+# X é os tratamentos utilizados nos dados
+x = c(1,1,1,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,4,4)
+x
+#Outra alternativa é escrever x=rep(c(1,2,3,4),each=4)
+#o argumento Each faz cada observação da lista se repetir
+#x quantidade de vezes
+
+#caso queria o tratamento qualitativo utilizar factor
+xf= factor(x)
+xf
+#Apenas visualização dos dados
+dados = cbind(x,y)
+dados
+
+#Analise descritiva, utilizar a função tapply(resposta,trat)
+medias = tapply(y,x,mean)#media para cada tratamento
+medias
+dp = tapply(y,x,sd)#desvio padrao de cada tratamento
+dp
+max = tapply(y,x,max) #argumento maximo de cada tratamento
+max
+min = tapply(y,x,min)#menor agumento de cada tratamento
+min
+v = tapply(y,x,var)# variancia de cada tratamento
+v 
+mediag = mean(medias)#media geral dos dados
+mediag
+
+
+#Analise grafica qualitativa
+
+plot(factor(x),y)#utilizar o plot em meio a um fator
+#retorna um boxplot
+#colocando os pontoas medios de cada trat no grafico
+points(medias, col =c("blue","red","green","purple"), pch = 19)
+points(mean(medias),pch = 19, col ="orange")
+
+#(a) É a mesma quantidade de ruído presente para todos os quatro
+#Projetos? Use 0,05.
+#Para responder o teste de medias 
+#utilizar o dic quali
+#os tratamentos (x) vem como primeiro argumento
+saida1 =  dic(x,y,quali=TRUE,mcomp = "tukey",hvar="bartlett")
+
+#Analisando os resultados da Anova
+#1 pelo quantil ou 2 pelo pvalor
+#Quantil da F[a-1;N-a]
+qf(0.95,3,16) # rejeitamos pois fobs é maior que ftabelado
+#2 p valor, considerando um alpha de 0.05 rejeitamos h0 pois pv < alpha
+#Ha pelo menos um efeito de tratamento diferente entre si
+
+#analise grafica
+curve(df(x,3,16), xlim = c(0,30))
+abline(v = 21.78 , col = "blue")
+abline(v = qf(0.95,3,16), col="red" )
+
+#(b) Analise os resíduos deste experimento. São os
+#Análise de variância Pressupostos satisfeitos?
+#Sim,Teste de normalidade dos residuos ( Shapiro-Wilk ) 
+#De acordo com o teste de Shapiro-Wilk a 5% de significancia, os residuos podem ser considerados normais.
+#De acordo com o teste de bartlett a 5% de significancia, as variancias podem ser consideradas homogeneas.
+
+#(c) Qual projeto de circuito você selecionaria para uso? Baixo
+#o ruído é o melhor.
+#De acordo com o teste de tukey os tratramentos 4,2 e 3,1 sao estatisticamente iguais
+#porem as menores medias estão com os tratamentos 3 e 1 com melhor resultado o 1
+
+#Como ter previsoes sobre os ruidos em relaçao aos tratamentos?
+#para previsão basta utilizar regressão vejamos:
+saida2 =  dic(x,y,quali = FALSE, mcomp = "tukey",hvar= "bartlett")
+
+#podemos acrescentar um modelo de regressão
+m =lm(y~x)
+#analise de toda regressão
+plot(m)
+#grafico de disperssão para analisar se o modelo esta bem ajustado
+plot(x,y, col = x, pch = 19)
+abline(m)#acrescentar a reta de regressão
+points(x,predict(m),pch = 19, col=x)
+
+#contraste 
+#1 contraste 
+c1 = c(3,-1,-1,-1) # h0: 3u = u+u+u
+c1
+sqc1 = (sum(c1*medias))^2/((1/5)*sum(c1^2))
+sqc1 
+fobs = sqc1/184.3
+fobs
+fc = qf(0.95,1,16)
+fc
+#analise grafica
+curve(df(x,1,16),xlim = c(0,38)) #curva da distribuição f 
+abline(v = fc, col = "red",lty = 2)# linha vermelha tracejada
+abline(v = fobs, col = "blue") #cria linha observada
+
